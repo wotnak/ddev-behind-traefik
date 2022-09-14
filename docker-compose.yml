@@ -1,0 +1,24 @@
+version: '3.9'
+services:
+
+  traefik:
+    image: traefik:2.8
+    restart: unless-stopped
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./config/:/etc/traefik/"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "81:81"
+      - "82:82"
+    networks:
+      - traefik
+      - ddev_default
+
+networks:
+  traefik:
+    name: traefik
+  ddev_default:
+    name: ddev_default
+    external: true

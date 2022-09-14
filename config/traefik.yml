@@ -1,0 +1,31 @@
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: "web-secure"
+          scheme: "https"
+  web-secure:
+    address: ":443"
+  dba:
+    address: ":81"
+  mailhog:
+    address: ":82"
+  traefik:
+    address: ":8888"
+
+providers:
+  docker:
+    watch: true
+    exposedByDefault: false
+  file:
+    directory: "/etc/traefik/dynamic"
+    watch: true
+
+api:
+  dashboard: true
+  insecure: true
+
+serversTransport:
+  insecureSkipVerify: true

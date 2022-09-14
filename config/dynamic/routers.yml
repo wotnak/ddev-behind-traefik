@@ -1,0 +1,52 @@
+http:
+
+  routers:
+    api:
+      rule: Host(`traefik.BASE_DOMAIN`)
+      entrypoints: "web-secure"
+      service: api@internal
+      tls: true
+
+    # Access to websites exposed by ddev.
+    ddev-web-secure:
+      rule: "HostRegexp(`{subdomain:[a-z0-9-]+}.BASE_DOMAIN`)"
+      priority: 1
+      entrypoints: "web-secure"
+      service: "ddev-web"
+      tls: true
+    ddev-web:
+      rule: "HostRegexp(`{subdomain:[a-z0-9-]+}.BASE_DOMAIN`)"
+      priority: 1
+      entrypoints: "web"
+      service: "ddev-web"
+    # Access to phpmyadmin instances exposed by ddev.
+    ddev-phpmyadmin:
+      rule: "HostRegexp(`{subdomain:[a-z0-9-]+}.BASE_DOMAIN`)"
+      priority: 1
+      entrypoints: "dba"
+      service: "ddev-phpmyadmin"
+      tls: true
+    # Access to mailhog instances exposed by ddev.
+    ddev-mailhog:
+      rule: "HostRegexp(`{subdomain:[a-z0-9-]+}.BASE_DOMAIN`)"
+      priority: 1
+      entrypoints: "mailhog"
+      service: "ddev-mailhog"
+      tls: true
+
+  services:
+   ddev-web:
+    loadBalancer:
+      servers:
+        # Pass request to ddev router.
+        - url: "https://ddev-router:444/"
+   ddev-phpmyadmin:
+    loadBalancer:
+      servers:
+        # Pass request to ddev router default phpmyadmin port.
+        - url: "https://ddev-router:8037/"
+   ddev-mailhog:
+    loadBalancer:
+      servers:
+        # Pass request to ddev router default mailhog port.
+        - url: "https://ddev-router:8026/"
